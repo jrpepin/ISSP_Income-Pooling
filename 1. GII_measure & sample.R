@@ -9,7 +9,7 @@
 # psych
 
 # Set-up
- setwd("C:/Users/Joanna/Dropbox/@Dissertation/CountryComparison")
+setwd("C:/Users/Joanna/Dropbox/Cohen/Gender Inequality Index")
 
 ## Load the libraries
 library(haven)
@@ -290,65 +290,5 @@ remove(index)
 data$country <- factor(data$country)
 
 class(data)
-data = as.data.frame(data) #Make dataframe to get rid of "unknown or uninitialised column errors"
-data = as_tibble(data) #For viewing output in R
-
-## Figure 1
-fig1 <- table(data$country, data$pool)
-fig1 <- prop.table(fig1, 1)
-fig1 = as_tibble(fig1)
-fig1$Var2 <- factor(fig1$Var2, levels = c("One $ Manager", "Manage $ Together", "Keep Some $ Separate", "Keep All $ Separate"))
-names(fig1) <- c("country", "type", "prop")
-fig1 <- fig1 %>% 
-  left_join(GII, by = "country")
-fig1$country <- factor(fig1$country)
-
-tiff("test.tiff", units="in", width=6.5, height=5, res=300)
-
-fig1 %>%
-  ggplot(aes(index, prop, color = type)) +
-  geom_smooth(method = "lm", se = FALSE) +
-  geom_text(mapping=aes(label=country), size = 4) +
-  scale_x_reverse() +
-  facet_wrap( ~ type) +
-  theme_minimal() +
-  theme(legend.position="none",
-        plot.title = element_text(size=18,   face = "bold"),
-        strip.text = element_text(size = 14, face = "bold"),
-        axis.text  = element_text(size = 14)) +
-  ggtitle("Proportion of Couples with each Income Organizational Approach \nby Gender Inequality Index") +
-  labs(x = "Gender Inequality Index", y = "Proportion") +
-  scale_colour_manual(values=c("#116A66", "#CD3278", "#5D478B", "#CD661D"))
-
-
-dev.off() # to be used with tiff??
-
-
-## Table 1
-#Load package
-library("tableone")
-
-# Create a variable list which we want in Table 1
-listVars <- c("sex", "age", "parent", "employ", "homemaker", "degree", "hswrk", "respmom", "famlife")
-
-# Define categorical variables
-catVars <- c("sex", "parent", "employ", "homemaker", "degree", "respmom")
-
-# Descriptive Statistics
-tab1 <- CreateTableOne(vars = listVars, data = data, factorVars = catVars)
-print(tab1, quote = T)
-
-## Table 2
-data %>%
-  group_by(country) %>%
-  summarize(meanIndex = mean(index))
-
-tab2a <- table(data$country, data$relinc)
-prop.table(tab2a, 1)
-
-tab2b <- table(data$country, data$marst)
-prop.table(tab2b, 1)
-
-table(data$country)
-
-
+data = as.data.frame(data) # Make dataframe to get rid of "unknown or uninitialised column errors"
+data = as_tibble(data) # For viewing output in R
