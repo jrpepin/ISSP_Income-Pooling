@@ -62,10 +62,9 @@ prop.table(tab2b, 1)
 table(data$country)
 
 #######################################################################################
-# Table 3
+# Table 3 & 4
 setwd("C:/Users/Joanna/Dropbox/Repositories/ISSP_Income-Pooling")
 write.csv(data, file = "ISSPdata.csv")
-
 
 library(nnet)
 mn1 <- multinom(pool ~ marst + relinc, data = data)
