@@ -63,53 +63,44 @@ table(data$country)
 
 #######################################################################################
 # Table 3 & 4
-setwd("C:/Users/Joanna/Dropbox/Repositories/ISSP_Income-Pooling")
-write.csv(data, file = "ISSPdata.csv")
+require(foreign)
+write.dta(data, "C:/Users/Joanna/Dropbox/Repositories/ISSP_Income-Pooling/ISSPdata.dta")
 
-library(nnet)
-mn1 <- multinom(pool ~ marst + relinc, data = data)
-mn2 <- multinom(pool ~ marst + relinc | country, data = data)
+#######################################################################################
+# Figures
+library(readxl)
+library(cowplot)
 
-# https://stackoverflow.com/questions/21082396/multinomial-logistic-multilevel-models-in-r
+## Figure 2
+fig2_data <- read_excel("C:/Users/Joanna/Dropbox/Repositories/ISSP_Income-Pooling/figures/fig2.xlsx")
 
-install.packages("devtools")
-library(devtools)
-find_rtools() # Error in find_rtools() : could not find function "find_rtools"
-install.packages("pkgbuild")
-library(pkgbuild)
-find_rtools()
+fig2_data <- fig2_data %>%
+  gather(type, prop, -relinc, -index)
 
-library(brms)
+fig2_data$relinc <- ordered(fig2_data$relinc, levels = c("Men Primary-Earners", "Equal-Earners", "Women Primary-Earners"))
 
-bm1 <- brm (pool ~ (1 | index), # this doesn't work
-           data=data, family="categorical",
-           prior=c(set_prior ("normal (0, 8)")))
+#  ggtitle("Predictive Probability of Each Organizational Approach \nby Couple Level Relative Income Status and Country Level Gender Inequality")
+fig2 <- fig2_data %>%
+  ggplot(aes(index, prop, fill = type)) +
+  facet_wrap(~ relinc) +
+  geom_area(size=1, colour="black", alpha = .90) +
+  theme_minimal() +
+  labs(x = "Gender Inequality Index", y = "Proportion") +
+  scale_fill_manual(values=c("#CD661D", "#5D478B", "#CD3278", "#116A66")) +
+  scale_x_reverse( lim=c(.61,.05)) +
+    theme(legend.position="none",
+        plot.title = element_text(size = 12,   face = "bold"),
+        strip.text = element_text(size = 11,   face = "bold"),
+        axis.text  = element_text(size = 11),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank())
 
-bm2 <- brm (
-  pool   ~ relinc,
-  data   = data, 
-  family = "categorical",
-  prior  = c(set_prior ("normal (0, 8)")),
-  seed   = 123 # Adding a seed makes results reproducible.
-  )
+fig2 <- ggdraw(fig2) + draw_label(" Keep All $ Separate",    x = 0.22, y = 0.82, fontface='bold', size = 10, colour = "white")
+fig2 <- ggdraw(fig2) + draw_label("Keep Some $ Separate",    x = 0.24, y = 0.74, fontface='bold', size = 10, colour = "white")
+fig2 <- ggdraw(fig2) + draw_label("Manage $ Together",       x = 0.22, y = 0.63, fontface='bold', size = 10, colour = "white")
+fig2 <- ggdraw(fig2) + draw_label("One $ Manager",           x = 0.20, y = 0.22, fontface='bold', size = 10, colour = "white")
 
-m1 <- brm(
-  Allowed ~ D.z,
-  data = lrsmall,
-  prior = m1priors,
-  family = "bernoulli",
-  seed = 123 # Adding a seed makes results reproducible.
-) 
+fig2
 
-bm3 <- brm (pool ~ marst + (1 | index),
-           data=data, family="categorical",
-           prior=c(set_prior ("normal (0, 8)")))
+ggsave("issp_figure 2.png", fig2, width = 16, height = 8, units = "cm", dpi = 300)
 
-library(mlogit)
-mlog1 <- mlogit(pool ~ relinc + marst | index, data = data)
-
-
-# rpl <- mlogit(mode ~ price+ catch | income, Fishing, varying = 2:9,
-  #            shape = 'wide', rpar = c(price= 'n', catch = 'n'),
-   #           correlation = TRUE, halton = NA,
-    #          R = 10, tol = 10, print.level = 0)
