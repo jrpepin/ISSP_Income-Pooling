@@ -70,6 +70,8 @@ write.dta(data, "C:/Users/Joanna/Dropbox/Repositories/ISSP_Income-Pooling/ISSPda
 # Figures
 library(readxl)
 library(cowplot)
+library(tidyverse)
+library(ggplot2)
 
 ## Figure 2
 fig2_data <- read_excel("C:/Users/Joanna/Dropbox/Repositories/ISSP_Income-Pooling/figures/fig2.xlsx")
@@ -104,3 +106,37 @@ fig2
 
 ggsave("issp_figure 2.png", fig2, width = 16, height = 8, units = "cm", dpi = 300)
 
+
+
+## Figure 3
+fig3_data <- read_excel("C:/Users/Joanna/Dropbox/Repositories/ISSP_Income-Pooling/figures/fig3.xlsx")
+
+fig3_data <- fig3_data %>%
+  gather(type, prop, -marst, -index)
+
+fig3_data$marst <- ordered(fig3_data$marst, levels = c("Married", "Cohab"))
+
+#  ggtitle("Predictive Probability of Each Organizational Approach \nby Couple Level Marital Status and Country Level Gender Inequality")
+fig3 <- fig3_data %>%
+  ggplot(aes(index, prop, fill = type)) +
+  facet_wrap(~ marst) +
+  geom_area(size=1, colour="black", alpha = .90) +
+  theme_minimal() +
+  labs(x = "Gender Inequality Index", y = "Proportion") +
+  scale_fill_manual(values=c("#CD661D", "#5D478B", "#CD3278", "#116A66")) +
+  scale_x_reverse( lim=c(.61,.05)) +
+  theme(legend.position="none",
+        plot.title = element_text(size = 12,   face = "bold"),
+        strip.text = element_text(size = 11,   face = "bold"),
+        axis.text  = element_text(size = 11),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank())
+
+fig3 <- ggdraw(fig3) + draw_label(" Keep All $ Separate",    x = 0.23, y = 0.82, fontface='bold', size = 10, colour = "white")
+fig3 <- ggdraw(fig3) + draw_label("Keep Some $ Separate",    x = 0.25, y = 0.74, fontface='bold', size = 10, colour = "white")
+fig3 <- ggdraw(fig3) + draw_label("Manage $ Together",       x = 0.23, y = 0.63, fontface='bold', size = 10, colour = "white")
+fig3 <- ggdraw(fig3) + draw_label("One $ Manager",           x = 0.21, y = 0.22, fontface='bold', size = 10, colour = "white")
+
+fig3
+
+ggsave("issp_figure 3.png", fig3, width = 16, height = 8, units = "cm", dpi = 300)
