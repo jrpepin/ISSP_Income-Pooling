@@ -115,13 +115,14 @@ est table oneman equal some sep
 **********************************************************************************************************************
 // Dual-earners
 preserve
-drop if V50==1 | V50==7 /* Drops 800 respondents */
+drop if dualearn==2 /* Drops 1,353 respondents */
+count
 global 	ivars "sex age parent i.employ homemaker ib4.degree hswrk respmom famlife"
 
 mlogit		pool	index i.relinc 		i.marst		$ivars 					, cluster(country) rrr
 estat 		ic
 mlogit		pool	c.index##i.relinc	i.marst		$ivars					, cluster(country) rrr
 estat 		ic
-mlogit		pool	c.index##i.marst 	i.relinc $ivars 					, cluster(country) rrr
+mlogit		pool	c.index##i.marst 	i.relinc 	$ivars 					, cluster(country) rrr
 estat 		ic
 restore

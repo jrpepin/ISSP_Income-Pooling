@@ -80,6 +80,15 @@ levels(data$SEX)[levels(data$SEX)=='No answer'] <- NA
 # Earnings Homogamy
 data <- data %>%
   mutate(
+    dualearn = case_when(
+      relinc >  1 & relinc <  7          ~ "Dual-earner",
+      relinc == 1 | relinc == 7          ~ "One homemaker",      
+      TRUE                                ~  NA_character_ ))
+
+data$dualearn <- as_factor(data$dualearn)
+
+data <- data %>%
+  mutate(
     relinc = case_when(
       ((relinc >= 1 & relinc <= 3) & SEX == "Male")    | 
       ((relinc >= 5 & relinc <= 7) & SEX == "Female")         ~ "Man primary-earner",
@@ -203,11 +212,11 @@ data$famlife <- as.numeric(data$famlife)
 colnames(data) <- tolower(colnames(data))
 
 ## Apply variable labels
-attr(data$relinc, 'label')     <- 'Earnings homogamy'
-attr(data$pool, 'label')       <- 'Income allocation arrangement'
-attr(data$marst, 'label')      <- 'Marital status'
-attr(data$homemaker, 'label')  <- 'Prior homemaker'
-attr(data$hswrk, 'label')      <- 'Housework index'
+attr(data$relinc,    'label')   <- 'Earnings homogamy'
+attr(data$pool,      'label')   <- 'Income allocation arrangement'
+attr(data$marst,     'label')   <- 'Marital status'
+attr(data$homemaker, 'label')   <- 'Prior homemaker'
+attr(data$hswrk,     'label')   <- 'Housework index'
 
 # Create the sample
 ## Sample of cohabs - keep only if there were at least 30 cohabs in a country
@@ -248,7 +257,7 @@ data <- filter(data, age >= 18 & age <=54)
 
 ## Keep analysis variables
 data <- select(data, pool, code, country, marst, relinc, sex, age, parent, 
-               employ, homemaker, degree, hswrk, respmom, famlife)
+               employ, homemaker, degree, hswrk, respmom, famlife, dualearn)
 
 #Missing data
 colSums(is.na(data)) # For key variables
