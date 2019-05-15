@@ -3,10 +3,6 @@ clear
 set more off
 local logdate = string( d(`c(current_date)'), "%dCY.N.D" )
 
-// Replace NA with nothing in CSV file.
-// Delete first column prodced by R output
-// Replace m1 - t9 with numbers
-
 /// log using ISSPdata_`logdate'.log, t replace
 
 ************************************************************************************************************
@@ -14,9 +10,6 @@ local logdate = string( d(`c(current_date)'), "%dCY.N.D" )
 
 // Data: ISSP2012 wrangled in R. 
 use 	"C:\Users\Joanna\Dropbox\Repositories\ISSP_Income-Pooling\ISSPdata.dta", clear
-
-// gsem (i.schooltype <- englishgrade i.sex M1[class]@1), mlogit nocapslatent latent(M1)
-
 
 **********************************************************************************************************************
 *Table 3
@@ -78,29 +71,45 @@ margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(4))	 	/* Keep Sep		*/
 **********************************************************************************************************************
 // Figure 2
 global 	ivars " sex age parent i.employ homemaker ib4.degree hswrk respmom famlife"
-mlogit	pool	c.index##i.relinc	i.marst		$ivars					, cluster(country)
 
-margin 	relinc, at(index=(.05(.02).62)) predict(outcome(1)) post	/* One Manages 	*/
-est store oneman
-margin 	relinc, at(index=(.05(.02).62)) predict(outcome(2))	post	/* Manage Equal */
-est store equal
-margin 	relinc, at(index=(.05(.02).62)) predict(outcome(3))	post	/* Pool Some	*/
-est store some
-margin 	relinc, at(index=(.05(.02).62)) predict(outcome(4))	post	/* Keep Sep		*/
-est store sep
+mlogit	pool	c.index##i.relinc	i.marst		$ivars						, cluster(country)
+margin 		relinc, at(index=(.05(.02).62)) predict(outcome(1)) post		/* One Manages 	*/
+est store 	oneman
+
+mlogit		pool	c.index##i.relinc	i.marst		$ivars					, cluster(country)
+margin 		relinc, at(index=(.05(.02).62)) predict(outcome(2))	post		/* Manage Equal */
+est store 	equal
+
+mlogit		pool	c.index##i.relinc	i.marst		$ivars					, cluster(country)
+margin 		relinc, at(index=(.05(.02).62)) predict(outcome(3))	post		/* Pool Some	*/
+est store 	some
+
+mlogit		pool	c.index##i.relinc	i.marst		$ivars					, cluster(country)
+margin 		relinc, at(index=(.05(.02).62)) predict(outcome(4))	post		/* Keep Sep		*/
+est store 	sep
 
 est table oneman equal some sep 
-using "C:\Users\Joanna\Dropbox\Repositories\ISSP_Income-Pooling\Fig2.csv"
 
 // Figure 3
 global 	ivars "i.marst sex age parent i.employ homemaker ib4.degree hswrk respmom famlife"
-mlogit		pool	c.index##i.marst 		i.relinc $ivars 					, cluster(country)
-margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(1))		/* One Manages 	*/
-margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(2))	 	/* Manage Equal */
-margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(3))	 	/* Pool Some	*/
-margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(4))	 	/* Keep Sep		*/
 
+mlogit		pool	c.index##i.marst 		i.relinc $ivars 				, cluster(country)
+margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(1)) post		/* One Manages 	*/
+est store 	oneman
 
+mlogit		pool	c.index##i.marst 		i.relinc $ivars 				, cluster(country)
+margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(2)) post	 	/* Manage Equal */
+est store 	equal
+
+mlogit		pool	c.index##i.marst 		i.relinc $ivars 				, cluster(country)
+margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(3)) post	 	/* Pool Some	*/
+est store 	some
+
+mlogit		pool	c.index##i.marst 		i.relinc $ivars 				, cluster(country)
+margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(4)) post	 	/* Keep Sep		*/
+est store 	sep
+
+est table oneman equal some sep 
 **********************************************************************************************************************
 *Appendix Table 2
 **********************************************************************************************************************
