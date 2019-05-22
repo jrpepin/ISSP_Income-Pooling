@@ -1,24 +1,30 @@
 # Figures & Tables
-
+library(plyr)
 #######################################################################################
 # Figure 1
 setwd("C:/Users/Joanna/Dropbox/Cohen/Gender Inequality Index/Figures")
 
-fig1_data <- table(data$country, data$pool)
+fig1_data <- table(data$code, data$pool)
 fig1_data <- prop.table(fig1_data, 1)
-fig1_data <- as_tibble(fig1_data, .name_repair = ~ c("country", "type", "prop"))
+fig1_data <- as_tibble(fig1_data, .name_repair = ~ c("code", "type", "prop"))
 
 fig1_data$type <- factor(fig1_data$type, levels = c("One $ Manager", "Manage $ Together", "Keep Some $ Separate", "Keep All $ Separate"))
+fig1_data$type <- revalue(fig1_data$type, c("One $ Manager"="Pooled: One $ Manager", "Manage $ Together"="Pooled: Manage $ Together"))
+
+# Create codes dataset
+codes <- data %>%
+  distinct(code, code)
 
 fig1_data <- fig1_data %>% 
-  left_join(GII, by = "country")
-fig1_data$country <- factor(fig1_data$country)
+  left_join(GII,  by = "code") %>%
+  left_join(codes, by = "code")
+fig1_data$code <- factor(fig1_data$code)
 
 
 fig1 <- fig1_data %>%
   ggplot(aes(index, prop, color = type)) +
   geom_smooth(method = "lm", se = FALSE) +
-  geom_text(mapping=aes(label=country), size = 3) +
+  geom_text(mapping=aes(label=code), size = 3, position=position_jitter(width=.05,height=.05)) +
   scale_x_reverse() +
   facet_wrap( ~ type) +
   theme_minimal() +
@@ -50,16 +56,16 @@ print(tab1, quote = F)
 #######################################################################################
 # Table 2
 data %>%
-  group_by(country) %>%
+  group_by(code) %>%
   summarize(meanIndex = mean(index))
 
-tab2a <- table(data$country, data$relinc)
+tab2a <- table(data$code, data$relinc)
 prop.table(tab2a, 1)
 
-tab2b <- table(data$country, data$marst)
+tab2b <- table(data$code, data$marst)
 prop.table(tab2b, 1)
 
-table(data$country)
+table(data$code)
 
 #######################################################################################
 # Table 3 & 4
@@ -81,11 +87,11 @@ fig2_data <- fig2_data %>%
 
 fig2_data$relinc <- ordered(fig2_data$relinc, levels = c("Men Primary-Earners", "Equal-Earners", "Women Primary-Earners"))
 
-#  ggtitle("Predictive Probability of Each Organizational Approach \nby Couple Level Relative Income Status and Country Level Gender Inequality")
+#  ggtitle("Predictive Probability of Each Organizational Approach \nby Couple Level Relative Income Status and code Level Gender Inequality")
 fig2 <- fig2_data %>%
   ggplot(aes(index, prop, fill = type)) +
   facet_wrap(~ relinc) +
-  geom_area(size=1, colour="black", alpha = .90) +
+  geom_area(size=.2, colour="black", alpha = .90) +
   theme_minimal() +
   labs(x = "Gender Inequality Index", y = "Proportion") +
   scale_fill_manual(values=c("#CD661D", "#5D478B", "#CD3278", "#116A66")) +
@@ -115,12 +121,14 @@ fig3_data <- fig3_data %>%
   gather(type, prop, -marst, -index)
 
 fig3_data$marst <- ordered(fig3_data$marst, levels = c("Married", "Cohab"))
+fig3_data$marst <- revalue(fig3_data$marst, c("Cohab"="Cohabiting"))
 
-#  ggtitle("Predictive Probability of Each Organizational Approach \nby Couple Level Marital Status and Country Level Gender Inequality")
+
+#  ggtitle("Predictive Probability of Each Organizational Approach \nby Couple Level Marital Status and code Level Gender Inequality")
 fig3 <- fig3_data %>%
   ggplot(aes(index, prop, fill = type)) +
   facet_wrap(~ marst) +
-  geom_area(size=1, colour="black", alpha = .90) +
+  geom_area(size=.2, colour="black", alpha = .90) +
   theme_minimal() +
   labs(x = "Gender Inequality Index", y = "Proportion") +
   scale_fill_manual(values=c("#CD661D", "#5D478B", "#CD3278", "#116A66")) +
