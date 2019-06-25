@@ -1,4 +1,4 @@
-cd "C:\Users\Joanna\Dropbox\Repositories\ISSP_Income-Pooling"
+cd "C:\Users\Joanna\Dropbox\Repositories\ISSP_Income-Pooling\data"
 clear
 set more off
 local logdate = string( d(`c(current_date)'), "%dCY.N.D" )
@@ -9,7 +9,7 @@ local logdate = string( d(`c(current_date)'), "%dCY.N.D" )
 /// Import the data
 
 // Data: ISSP2012 wrangled in R. 
-use 	"C:\Users\Joanna\Dropbox\Repositories\ISSP_Income-Pooling\ISSPdata.dta", clear
+use 	"C:\Users\Joanna\Dropbox\Repositories\ISSP_Income-Pooling\data\ISSPdata.dta", clear
 
 **********************************************************************************************************************
 *Table 3

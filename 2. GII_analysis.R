@@ -1,9 +1,18 @@
-# Figures & Tables
-library(plyr)
+# Set-up
+
+## Set working directory
+setwd(repoDir)
+
+## Figures & Tables
+library("foreign")
+library("plyr")
+library("tableone")
+library("readxl")
+library("cowplot")
+library("tidyverse")
+library("ggplot2")
 #######################################################################################
 # Figure 1
-setwd("C:/Users/Joanna/Dropbox/Cohen/Gender Inequality Index/Figures")
-
 fig1_data <- table(data$code, data$pool)
 fig1_data <- prop.table(fig1_data, 1)
 fig1_data <- as_tibble(fig1_data, .name_repair = ~ c("code", "type", "prop"))
@@ -36,12 +45,10 @@ fig1 <- fig1_data %>%
   labs(x = "Gender Inequality Index", y = "Proportion") +
   scale_colour_manual(values=c("#116A66", "#CD3278", "#5D478B", "#CD661D"))
 
-ggsave("issp_figure 1.png", width = 16, height = 16, units = "cm", dpi = 300)
+ggsave("figures/issp_figure 1.png", width = 16, height = 16, units = "cm", dpi = 300)
 
 #######################################################################################
 # Table 1
-## Load package
-library("tableone")
 
 # Create a variable list which we want in Table 1
 listVars <- c("sex", "age", "parent", "employ", "homemaker", "degree", "hswrk", "respmom", "famlife")
@@ -69,18 +76,13 @@ table(data$code)
 
 #######################################################################################
 # Table 3 & 4
-require(foreign)
-write.dta(data, "C:/Users/Joanna/Dropbox/Repositories/ISSP_Income-Pooling/ISSPdata.dta")
+write.dta("data/ISSPdata.dta")
 
 #######################################################################################
 # Figures
-library(readxl)
-library(cowplot)
-library(tidyverse)
-library(ggplot2)
 
 ## Figure 2
-fig2_data <- read_excel("C:/Users/Joanna/Dropbox/Repositories/ISSP_Income-Pooling/figures/fig2.xlsx")
+fig2_data <- read_excel("figures/fig2.xlsx")
 
 fig2_data <- fig2_data %>%
   gather(type, prop, -relinc, -index)
@@ -115,7 +117,7 @@ ggsave("issp_figure 2.png", fig2, width = 16, height = 8, units = "cm", dpi = 30
 
 
 ## Figure 3
-fig3_data <- read_excel("C:/Users/Joanna/Dropbox/Repositories/ISSP_Income-Pooling/figures/fig3.xlsx")
+fig3_data <- read_excel("figures/fig3.xlsx")
 
 fig3_data <- fig3_data %>%
   gather(type, prop, -marst, -index)
@@ -147,4 +149,4 @@ fig3 <- ggdraw(fig3) + draw_label("One $ Manager",           x = 0.21, y = 0.22,
 
 fig3
 
-ggsave("issp_figure 3.png", fig3, width = 16, height = 8, units = "cm", dpi = 300)
+ggsave("figures/issp_figure 3.png", fig3, width = 16, height = 8, units = "cm", dpi = 300)
