@@ -1,22 +1,43 @@
-## Get data
-# ZA5900: International Social Survey Programme: Family and Changing Gender Roles IV - ISSP 2012
+#####################################################################################
+# Set-up the environment
 
-## Install the following packages
-# haven
-# tidyverse
-# forcats
-# tableone
-# psych
+## Set-up the Directories
+mainDir <- "C:/Users/joanna/Dropbox/Data" # This should be your master data folder 
+subDir  <- "ISSP"  # This will be the name of the folder where you saved the ATUS data
+dataDir <- file.path(mainDir, subDir)
 
-# Set-up
-setwd("C:/Users/Joanna/Dropbox/Cohen/Gender Inequality Index")
+repoDir <- "C:/Users/joanna/Dropbox/Repositories/ISSP_Income-Pooling" # This should be your master project folder
+outDir <- file.path(repoDir, "data") # This will be the name of the folder where data output goes
+figDir <- file.path(repoDir, "figures") # This will be the name of the folder where figures are saved
+
+## This will create a data sub-directory folder in the master project directory if doesn't exist
+if (!dir.exists(outDir)){
+  dir.create(outDir)
+} else {
+  print("output directory already exists!")
+}
+
+## This will create a figures sub-directory folder in the master project directory if doesn't exist
+if (!dir.exists(figDir)){
+  dir.create(figDir)
+} else {
+  print("figure directory already exists!")
+}
 
 ## Load the libraries
-library(haven)
-library(tidyverse)
+library("haven")
+library("tidyverse")
+library("forcats")
+library("psych")
 
-## Import the data
-issp12 <- read_dta("C:/Users/Joanna/Dropbox/Data/ISSP/ISSP_2012_Families.dta")
+## Get data
+# ZA5900: International Social Survey Programme: Family and Changing Gender Roles IV - ISSP 2012
+## Data can be accessed here: https://www.gesis.org/issp/modules/issp-modules-by-topic/family-and-changing-gender-roles/2012/
+## Data import code assumes the researcher downloaded the Stata data files.
+
+setwd(dataDir) # This will set the working directory to the folder where the data is stored
+
+issp12 <- read_dta("ISSP_2012_Families.dta") # Change this to whatever you named the downloaded data file.
 
 ### Look at the data
 head(issp12, n = 30)
@@ -174,7 +195,7 @@ data <- within(data, homemaker <- relevel(homemaker, ref = "Other"))
 # Housework
 # check Chronbach's alpha
 hswrk <- subset(data, select = c("laundry", "repairs", "carewk", "groceries", "cleaning", "meals"))
-library(psych)
+
 alpha(hswrk)
 remove(hswrk)
 
@@ -199,7 +220,7 @@ data <- data %>%
 data$hswrk<-rowSums(data[,19:24])-6  # Create Housework Index
 
 # Happiness with Family Life
-library(forcats)
+
 data$famlife <- as_factor(data$famlife)
 levels(data$famlife)[levels(data$famlife)=="Can't choose"] <- NA
 levels(data$famlife)[levels(data$famlife)=="No answer"] <- NA
