@@ -3,7 +3,7 @@
 
 ## Set-up the Directories
 mainDir <- "C:/Users/joanna/Dropbox/Data" # This should be your master data folder 
-subDir  <- "ISSP"  # This will be the name of the folder where you saved the ATUS data
+subDir  <- "ISSP"  # This will be the name of the folder where you saved the ISSP data
 dataDir <- file.path(mainDir, subDir)
 
 repoDir <- "C:/Users/joanna/Dropbox/Repositories/ISSP_Income-Pooling" # This should be your master project folder
