@@ -56,6 +56,8 @@ data <- rename(data, pool	     =	V41,	nation	  =	V3,	  duration =	V67,
                      laundry	 =	V42,	repairs	  =	V43,	carewk	 =	V44,
                      groceries =	V45,	cleaning	=	V46,	meals	   =	V47,
                      famlife	 =	V57)
+save <- data # create a temporary datafile if needed.
+data <- save # If need to rerun
 ## Clean the variables
 
 # Country
@@ -244,9 +246,19 @@ attr(data$hswrk,     'label')   <- 'Housework index'
 marstfreq <- data %>%
   group_by(country) %>%
   count(marst) %>%
-  spread(key = marst, value = n) %>%
-  subset(select=c("country", "Cohab")) %>%
-  ungroup() # Create table of count of cohabs
+  spread(key = marst, value = n)
+
+names(marstfreq)[names(marstfreq) == "<NA>"] <- "Missing" # Change column name to missing
+marstfreq[is.na(marstfreq)] <- 0                          # Replace missing with zeros
+
+colnms=c("Married", "Single", "Cohab", "Missing")         # identify column names to be summed
+marstfreq$total<-rowSums(marstfreq[,colnms])              # Sum marital status for n count
+
+marstfreq <- transform(marstfreq, percohab = round(Cohab / total, digits=2)) # proportion cohabiting by country
+
+marstfreq <- marstfreq %>%
+  subset(select=c("country", "Cohab", "percohab")) %>%
+  ungroup() # Create table of count and percent of cohabs
 
 data <- data %>% 
   left_join(marstfreq, by = "country") # merge new table with primary table
@@ -277,8 +289,10 @@ data <- filter(data, marst != "Single")
 data <- filter(data, age >= 18 & age <=54)
 
 ## Keep analysis variables
-data <- select(data, pool, code, country, marst, relinc, sex, age, parent, 
-               employ, homemaker, degree, hswrk, respmom, famlife, dualearn)
+data <- select(data, 
+               pool, code, country, marst, relinc, sex, age, parent, 
+               employ, homemaker, degree, hswrk, respmom, famlife, dualearn,
+               percohab)
 
 #Missing data
 colSums(is.na(data)) # For key variables
@@ -293,7 +307,7 @@ table(data$country, data$famlife, exclude=NULL )
 
 table(data$country)
 
-mytable <- table(data$country, data$marst, data$relinc) #What's up with Italy?
+mytable <- table(data$country, data$marst, data$relinc) # What's up with Italy?
 ftable(mytable)
 remove(mytable)
 
