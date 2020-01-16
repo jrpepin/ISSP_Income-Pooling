@@ -13,27 +13,26 @@ library("tidyverse")
 library("ggplot2")
 #######################################################################################
 # Figure 1
-fig1_data <- table(data$code, data$pool)
+fig1_data <- table(data$country, data$pool)
 fig1_data <- prop.table(fig1_data, 1)
-fig1_data <- as_tibble(fig1_data, .name_repair = ~ c("code", "type", "prop"))
+fig1_data <- as_tibble(fig1_data, .name_repair = ~ c("country", "type", "prop"))
 
 fig1_data$type <- factor(fig1_data$type, levels = c("One $ Manager", "Manage $ Together", "Keep Some $ Separate", "Keep All $ Separate"))
 fig1_data$type <- revalue(fig1_data$type, c("One $ Manager"="Pooled: One $ Manager", "Manage $ Together"="Pooled: Manage $ Together"))
 
 # Create codes dataset
 codes <- data %>%
-  distinct(code, code)
+  distinct(country, code)
 
 fig1_data <- fig1_data %>% 
-  left_join(GII,  by = "code") %>%
-  left_join(codes, by = "code")
+  left_join(GII,  by = "country") %>%
+  left_join(codes, by = "country")
 fig1_data$code <- factor(fig1_data$code)
-
 
 fig1 <- fig1_data %>%
   ggplot(aes(index, prop, color = type)) +
   geom_smooth(method = "lm", se = FALSE) +
-  geom_text(mapping=aes(label=code), size = 3, position=position_jitter(width=.05,height=.05)) +
+  geom_text(mapping=aes(label=code), size = 3, position="jitter") +
   scale_x_reverse() +
   facet_wrap( ~ type) +
   theme_minimal() +
@@ -44,6 +43,7 @@ fig1 <- fig1_data %>%
 #  ggtitle("Proportion of Couples with each Income Organizational Approach \nby Gender Inequality Index") +
   labs(x = "Gender Inequality Index", y = "Proportion") +
   scale_colour_manual(values=c("#116A66", "#CD3278", "#5D478B", "#CD661D"))
+fig1
 
 ggsave("figures/issp_figure 1.png", width = 16, height = 16, units = "cm", dpi = 300)
 
@@ -112,9 +112,7 @@ fig2 <- ggdraw(fig2) + draw_label("One $ Manager",           x = 0.20, y = 0.22,
 
 fig2
 
-ggsave("issp_figure 2.png", fig2, width = 16, height = 8, units = "cm", dpi = 300)
-
-
+ggsave("figures/issp_figure 2.png", fig2, width = 16, height = 8, units = "cm", dpi = 300)
 
 ## Figure 3
 fig3_data <- read_excel("figures/fig3.xlsx")
