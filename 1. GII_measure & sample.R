@@ -312,8 +312,10 @@ ftable(mytable)
 remove(mytable)
 
 ## Listwise deletion
-data <- na.omit(data)
+data <- na.omit(data) %>%
+  droplevels()
 table(data$country)
+
 
 # Add Gender Inequality Index
 
@@ -323,6 +325,7 @@ table(data$country)
 country <- c("Argentina",	"Australia",	"Chile",	"Czech Republic",	"Finland",	"France",	"Germany",	"Iceland",	"India",	"Ireland",	"Latvia",	"Lithuania",	"Norway",	"Philippines",	"Poland",	"Spain",	"Sweden",	"Switzerland",	"United States",	"Venezuela")
 index <- c(0.38,	0.115,	0.36,	0.122,	0.075,	0.083,	0.075,	0.089,	0.61,	0.121,	0.216,	0.157,	0.065,	0.418,	0.14,	0.103,	0.055,	0.057,	0.256,	0.466)
 GII <- data.frame(country, index)
+GII$index <- GII$index * 100 # Rescale the index because a 1 unit change doesn't really exist.
 
 data <- data %>% 
   left_join(GII, by = "country") # merge new table with primary table
