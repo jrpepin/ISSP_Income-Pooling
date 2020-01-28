@@ -11,6 +11,7 @@ library("readxl")
 library("cowplot")
 library("tidyverse")
 library("ggplot2")
+library("ggrepel")
 #######################################################################################
 # Figure 1
 fig1_data <- table(data$country, data$pool)
@@ -32,7 +33,8 @@ fig1_data$code <- factor(fig1_data$code)
 fig1 <- fig1_data %>%
   ggplot(aes(index, prop, color = type)) +
   geom_smooth(method = "lm", se = FALSE) +
-  geom_text(mapping=aes(label=code), size = 3, position="jitter") +
+ # geom_text(mapping=aes(label=code), size = 3, position="jitter") + # alternate way of making labels readable.
+  geom_text_repel(mapping=aes(label=code), size = 3) +
   scale_x_reverse() +
   facet_wrap( ~ type) +
   theme_minimal() +
@@ -49,19 +51,6 @@ ggsave("figures/issp_figure 1.png", width = 16, height = 16, units = "cm", dpi =
 
 #######################################################################################
 # Table 1
-
-# Create a variable list which we want in Table 1
-listVars <- c("sex", "age", "parent", "employ", "homemaker", "degree", "hswrk", "respmom", "famlife")
-
-# Define categorical variables
-catVars <- c("sex", "parent", "employ", "homemaker", "degree", "respmom")
-
-# Descriptive Statistics
-tab1 <- CreateTableOne(vars = listVars, data = data, factorVars = catVars)
-print(tab1, quote = F)
-
-#######################################################################################
-# Table 2
 data %>%
   group_by(code) %>%
   summarize(meanIndex = mean(index))
@@ -73,6 +62,19 @@ tab2b <- table(data$code, data$marst)
 prop.table(tab2b, 1)
 
 table(data$code)
+
+#######################################################################################
+# Table 2
+
+# Create a variable list which we want in Table 2
+listVars <- c("sex", "age", "parent", "employ", "homemaker", "degree", "hswrk", "respmom", "famlife")
+
+# Define categorical variables
+catVars <- c("sex", "parent", "employ", "homemaker", "degree", "respmom")
+
+# Descriptive Statistics
+tab1 <- CreateTableOne(vars = listVars, data = data, factorVars = catVars)
+print(tab1, quote = F)
 
 #######################################################################################
 # Table 3 & 4
@@ -148,3 +150,34 @@ fig3 <- ggdraw(fig3) + draw_label("One $ Manager",           x = 0.21, y = 0.22,
 fig3
 
 ggsave("figures/issp_figure 3.png", fig3, width = 16, height = 8, units = "cm", dpi = 300)
+
+
+####################################################################################################
+# Analyses for reviewers
+
+#######################################################################################
+library("ggpubr")
+
+# Create Figure A dataset
+figA_data <- data %>%
+  distinct(code, index, percohab)
+
+figA <- figA_data %>%
+  ggplot(aes(index, percohab)) +
+  geom_text(mapping=aes(label=code), size = 3, position="jitter") +
+  geom_smooth(method = "lm", se = FALSE) +
+  stat_cor(method="pearson") +
+  scale_x_reverse() +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(size = 12,   face = "bold"),
+        strip.text = element_text(size = 10,   face = "bold"),
+        axis.text  = element_text(size = 10)) +
+  ggtitle("Correlation between GII and % Cohabiting") +
+  labs(x = "Gender Inequality Index", y = "Proportion Cohabiting")
+figA
+
+ggsave("figures/issp_figure A.png", width = 16, height = 16, units = "cm", dpi = 300)
+
+# Create Table A
+table(data$country, data$pool)
