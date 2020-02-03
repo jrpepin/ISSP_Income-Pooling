@@ -1,3 +1,10 @@
+*-------------------------------------------------------------------------------
+* INCOME-POOLING PROJECT
+* GII_multinomials.do
+* Joanna Pepin and Philip Cohen
+*-------------------------------------------------------------------------------
+di "$S_DATE"
+
 cd "C:\Users\Joanna\Dropbox\Repositories\ISSP_Income-Pooling\data"
 clear
 set more off

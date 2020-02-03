@@ -5,11 +5,10 @@ setwd(repoDir)
 
 ## Figures & Tables
 library("foreign")
-library("plyr")
+# library("plyr")
 library("tableone")
 library("readxl")
 library("cowplot")
-library("tidyverse")
 library("ggplot2")
 library("ggrepel")
 #######################################################################################
@@ -53,7 +52,10 @@ ggsave("figures/issp_figure 1.png", width = 16, height = 16, units = "cm", dpi =
 # Table 1
 data %>%
   group_by(code) %>%
-  summarize(meanIndex = mean(index))
+  summarise(meanIndex = mean(index))
+
+data %>%
+  summarise(meanIndex = mean(index))
 
 tab2a <- table(data$code, data$relinc)
 prop.table(tab2a, 1)
@@ -78,8 +80,9 @@ print(tab1, quote = F)
 
 #######################################################################################
 # Table 3 & 4
-write.dta("data/ISSPdata.dta")
-
+setwd(outDir)
+write.dta(data, "ISSPdata.dta") # Use this data in Stata to create Tables 3 & 4
+setwd(repoDir)
 #######################################################################################
 # Figures
 
@@ -152,7 +155,7 @@ fig3
 ggsave("figures/issp_figure 3.png", fig3, width = 16, height = 8, units = "cm", dpi = 300)
 
 
-####################################################################################################
+#######################################################################################
 # Analyses for reviewers
 
 #######################################################################################
