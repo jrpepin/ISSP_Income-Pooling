@@ -51,10 +51,10 @@ estat 		ic
 // Figure 2
 mlogit		pool	c.index##i.relinc	i.marst		$ivars					, cluster(country)
 
-margin 	relinc, at(index=(.05(.02).62)) predict(outcome(1))	/* One Manages 	*/
-margin 	relinc, at(index=(.05(.02).62)) predict(outcome(2))	/* Manage Equal */
-margin 	relinc, at(index=(.05(.02).62)) predict(outcome(3))	/* Pool Some	*/
-margin 	relinc, at(index=(.05(.02).62)) predict(outcome(4))	/* Keep Sep		*/
+margin 	relinc, at(index=(5(2)62)) predict(outcome(1))	/* One Manages 	*/
+margin 	relinc, at(index=(5(2)62)) predict(outcome(2))	/* Manage Equal */
+margin 	relinc, at(index=(5(2)62)) predict(outcome(3))	/* Pool Some	*/
+margin 	relinc, at(index=(5(2)62)) predict(outcome(4))	/* Keep Sep		*/
 
 **********************************************************************************************************************
 *Table 4 - Model 6
@@ -67,10 +67,10 @@ estat 		ic
 
 // Figure 3
 mlogit		pool	c.index##i.marst 		i.relinc $ivars 					, cluster(country)
-margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(1))		/* One Manages 	*/
-margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(2))	 	/* Manage Equal */
-margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(3))	 	/* Pool Some	*/
-margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(4))	 	/* Keep Sep		*/
+margin 		i.marst, at(index=(5(2)62)) predict(outcome(1))		/* One Manages 	*/
+margin 		i.marst, at(index=(5(2)62)) predict(outcome(2))	 	/* Manage Equal */
+margin 		i.marst, at(index=(5(2)62)) predict(outcome(3))	 	/* Pool Some	*/
+margin 		i.marst, at(index=(5(2)62)) predict(outcome(4))	 	/* Keep Sep		*/
 
 
 **********************************************************************************************************************
@@ -80,19 +80,19 @@ margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(4))	 	/* Keep Sep		*/
 global 	ivars " sex age parent i.employ homemaker ib4.degree hswrk respmom famlife"
 
 mlogit	pool	c.index##i.relinc	i.marst		$ivars						, cluster(country)
-margin 		relinc, at(index=(.05(.02).62)) predict(outcome(1)) post		/* One Manages 	*/
+margin 		relinc, at(index=(5(2)62)) predict(outcome(1)) post		/* One Manages 	*/
 est store 	oneman
 
 mlogit		pool	c.index##i.relinc	i.marst		$ivars					, cluster(country)
-margin 		relinc, at(index=(.05(.02).62)) predict(outcome(2))	post		/* Manage Equal */
+margin 		relinc, at(index=(5(2)62)) predict(outcome(2))	post		/* Manage Equal */
 est store 	equal
 
 mlogit		pool	c.index##i.relinc	i.marst		$ivars					, cluster(country)
-margin 		relinc, at(index=(.05(.02).62)) predict(outcome(3))	post		/* Pool Some	*/
+margin 		relinc, at(index=(5(2)62)) predict(outcome(3))	post		/* Pool Some	*/
 est store 	some
 
 mlogit		pool	c.index##i.relinc	i.marst		$ivars					, cluster(country)
-margin 		relinc, at(index=(.05(.02).62)) predict(outcome(4))	post		/* Keep Sep		*/
+margin 		relinc, at(index=(5(2)62)) predict(outcome(4))	post		/* Keep Sep		*/
 est store 	sep
 
 est table oneman equal some sep 
@@ -101,19 +101,19 @@ est table oneman equal some sep
 global 	ivars "i.marst sex age parent i.employ homemaker ib4.degree hswrk respmom famlife"
 
 mlogit		pool	c.index##i.marst 		i.relinc $ivars 				, cluster(country)
-margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(1)) post		/* One Manages 	*/
+margin 		i.marst, at(index=(5(2)62)) predict(outcome(1)) post		/* One Manages 	*/
 est store 	oneman
 
 mlogit		pool	c.index##i.marst 		i.relinc $ivars 				, cluster(country)
-margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(2)) post	 	/* Manage Equal */
+margin 		i.marst, at(index=(5(2)62)) predict(outcome(2)) post	 	/* Manage Equal */
 est store 	equal
 
 mlogit		pool	c.index##i.marst 		i.relinc $ivars 				, cluster(country)
-margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(3)) post	 	/* Pool Some	*/
+margin 		i.marst, at(index=(5(2)62)) predict(outcome(3)) post	 	/* Pool Some	*/
 est store 	some
 
 mlogit		pool	c.index##i.marst 		i.relinc $ivars 				, cluster(country)
-margin 		i.marst, at(index=(.05(.02).62)) predict(outcome(4)) post	 	/* Keep Sep		*/
+margin 		i.marst, at(index=(5(2)62)) predict(outcome(4)) post	 	/* Keep Sep		*/
 est store 	sep
 
 est table oneman equal some sep 
