@@ -102,7 +102,7 @@ fig2 <- fig2_data %>%
   theme_minimal() +
   labs(x = "Gender Inequality Index", y = "Proportion") +
   scale_fill_manual(values=c("#CD661D", "#5D478B", "#CD3278", "#116A66")) +
-  scale_x_reverse( lim=c(.61,.05)) +
+  scale_x_reverse( lim=c(61,5)) +
     theme(legend.position="none",
         plot.title = element_text(size = 12,   face = "bold"),
         strip.text = element_text(size = 11,   face = "bold"),
@@ -137,7 +137,7 @@ fig3 <- fig3_data %>%
   theme_minimal() +
   labs(x = "Gender Inequality Index", y = "Proportion") +
   scale_fill_manual(values=c("#CD661D", "#5D478B", "#CD3278", "#116A66")) +
-  scale_x_reverse( lim=c(.61,.05)) +
+  scale_x_reverse( lim=c(61,5)) +
   theme(legend.position="none",
         plot.title = element_text(size = 12,   face = "bold"),
         strip.text = element_text(size = 11,   face = "bold"),
@@ -182,5 +182,5 @@ figA
 
 ggsave("figures/issp_figure A.png", width = 16, height = 16, units = "cm", dpi = 300)
 
-# Create Table A
+# Create Appendix Table A
 table(data$country, data$pool)
