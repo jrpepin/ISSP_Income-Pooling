@@ -3,15 +3,13 @@
 * GII_multinomials.do
 * Joanna Pepin and Philip Cohen
 *-------------------------------------------------------------------------------
-di "$S_DATE"
-
-cd "C:\Users\Joanna\Dropbox\Repositories\ISSP_Income-Pooling\data"
+cd "C:\Users\Joanna\Dropbox\Repositories\ISSP_Income-Pooling"
 clear
 set more off
 local logdate = string( d(`c(current_date)'), "%dCY.N.D" )
 
-/// log using ISSPdata_`logdate'.log, t replace
-
+log using "docs\ISSPdata_`logdate'.log", t replace
+di "$S_DATE"
 ************************************************************************************************************
 /// Import the data
 
@@ -133,3 +131,5 @@ estat 		ic
 mlogit		pool	c.index##i.marst 	i.relinc 	$ivars 					, cluster(country) rrr
 estat 		ic
 restore
+
+log close
