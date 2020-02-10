@@ -184,3 +184,111 @@ ggsave("figures/issp_figure A.png", width = 16, height = 16, units = "cm", dpi =
 
 # Create Appendix Table A
 table(data$country, data$pool)
+
+#######################################################################################
+# Figure B
+figB_data <- table(data$country, data$pool)
+figB_data <- prop.table(figB_data, 1)
+figB_data <- as_tibble(figB_data, .name_repair = ~ c("country", "type", "prop"))
+
+figB_data$type <- factor(figB_data$type, levels = c("One $ Manager", "Manage $ Together", "Keep Some $ Separate", "Keep All $ Separate"))
+figB_data$type <- revalue(figB_data$type, c("One $ Manager"="Pooled: One $ Manager", "Manage $ Together"="Pooled: Manage $ Together"))
+
+# Create codes dataset
+codes <- data %>%
+  distinct(country, code)
+
+figB_data <- figB_data %>% 
+  left_join(FLFP,  by = "country") %>%
+  left_join(codes, by = "country")
+figB_data$code <- factor(figB_data$code)
+
+figB <- figB_data %>%
+  filter(code != "IN") %>%
+  ggplot(aes(flfp, prop, color = type)) +
+  geom_smooth(method = "lm", se = FALSE) +
+  # geom_text(mapping=aes(label=code), size = 3, position="jitter") + # alternate way of making labels readable.
+  geom_text_repel(mapping=aes(label=code), size = 3) +
+  facet_wrap( ~ type) +
+  theme_minimal() +
+  theme(legend.position="none",
+        plot.title = element_text(size = 12,   face = "bold"),
+        strip.text = element_text(size = 10,   face = "bold"),
+        axis.text  = element_text(size = 10)) +
+  ggtitle("Proportion of Couples with each Income Organizational Approach \nby Female Labor Force Participation") +
+  labs(x       = "Gender Inequality flfp", 
+       y       = "Proportion",
+       caption = "IN excluded because it is an outlier (FLFP = 21.27)") +
+  scale_colour_manual(values=c("#116A66", "#CD3278", "#5D478B", "#CD661D"))
+figB
+
+ggsave("figures/issp_figure B.png", width = 16, height = 16, units = "cm", dpi = 300)
+
+#######################################################################################
+## Figure C
+figC_data <- read_excel("figures/figC.xlsx")
+
+figC_data <- figC_data %>%
+  gather(type, prop, -relinc, -flfp)
+
+figC_data$relinc <- ordered(figC_data$relinc, levels = c("Men Primary-Earners", "Equal-Earners", "Women Primary-Earners"))
+
+figC <- figC_data %>%
+  ggplot(aes(flfp, prop, fill = type)) +
+  facet_wrap(~ relinc) +
+  geom_area(size=.2, colour="black", alpha = .90) +
+  theme_minimal() +
+  labs(x = "National Female Labor Force Participation Rate", y = "Proportion") +
+  scale_fill_manual(values=c("#CD661D", "#5D478B", "#CD3278", "#116A66")) +
+  theme(legend.position="none",
+        plot.title = element_text(size = 12,   face = "bold"),
+        strip.text = element_text(size = 11,   face = "bold"),
+        axis.text  = element_text(size = 11),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank()) +
+  ggtitle("Predicted Probability of Each Organizational Approach \nby Couple Level Relative Income Status and National FLFP")
+
+figC <- ggdraw(figC) + draw_label(" Keep All $ Separate",    x = 0.22, y = 0.72, fontface='bold', size = 10, colour = "white")
+figC <- ggdraw(figC) + draw_label("Keep Some $ Separate",    x = 0.24, y = 0.65, fontface='bold', size = 10, colour = "white")
+figC <- ggdraw(figC) + draw_label("Manage $ Together",       x = 0.22, y = 0.50, fontface='bold', size = 10, colour = "white")
+figC <- ggdraw(figC) + draw_label("One $ Manager",           x = 0.20, y = 0.22, fontface='bold', size = 10, colour = "white")
+
+figC
+
+ggsave("figures/issp_figure C.png", figC, width = 16, height = 8, units = "cm", dpi = 300)
+
+#######################################################################################
+## Figure D
+figD_data <- read_excel("figures/figD.xlsx")
+
+figD_data <- figD_data %>%
+  gather(type, prop, -marst, -flfp)
+
+figD_data$marst <- ordered(figD_data$marst, levels = c("Married", "Cohab"))
+figD_data$marst <- revalue(figD_data$marst, c("Cohab"="Cohabiting"))
+
+
+figD <- figD_data %>%
+  ggplot(aes(flfp, prop, fill = type)) +
+  facet_wrap(~ marst) +
+  geom_area(size=.2, colour="black", alpha = .90) +
+  theme_minimal() +
+  labs(x = "National Female Labor Force Participation Rate", y = "Proportion") +
+  scale_fill_manual(values=c("#CD661D", "#5D478B", "#CD3278", "#116A66")) +
+  theme(legend.position="none",
+        plot.title = element_text(size = 12,   face = "bold"),
+        strip.text = element_text(size = 11,   face = "bold"),
+        axis.text  = element_text(size = 11),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank()) +
+  ggtitle("Predicted Probability of Each Organizational Approach \nby Couple Level Marital Status and National FLFP")
+
+
+figD <- ggdraw(figD) + draw_label(" Keep All $ Separate",    x = 0.23, y = 0.72, fontface='bold', size = 10, colour = "white")
+figD <- ggdraw(figD) + draw_label("Keep Some $ Separate",    x = 0.25, y = 0.67, fontface='bold', size = 10, colour = "white")
+figD <- ggdraw(figD) + draw_label("Manage $ Together",       x = 0.23, y = 0.47, fontface='bold', size = 10, colour = "white")
+figD <- ggdraw(figD) + draw_label("One $ Manager",           x = 0.21, y = 0.22, fontface='bold', size = 10, colour = "white")
+
+figD
+
+ggsave("figures/issp_figure D.png", figD, width = 16, height = 8, units = "cm", dpi = 300)

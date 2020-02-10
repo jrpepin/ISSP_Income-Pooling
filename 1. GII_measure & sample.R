@@ -136,7 +136,14 @@ data <- data %>%
       duration      >= 3 & duration <= 92                   ~ "3 or more years",
       TRUE                                                  ~  NA_character_
     ))
-data <- select(data, -duration)
+
+data$duration <- as_factor(data$duration)
+data <- select(data, -duration) # Mark this out if running duration sensitivity test
+
+# Use this code to run a sensitivity test including the duration variable
+# and excluding the countries that don't have duration data.
+  # data <- data %>%
+    # subset(Country != "United States" & Country != "Philippines")
 
 # Parent
 data <- data %>%
@@ -168,7 +175,8 @@ data <- data %>%
       MAINSTAT   >= 5 & MAINSTAT<=9                     ~ "Not in labor force",
       TRUE                                              ~  NA_character_
     ))
-data$employ <- as_factor(data$employ, levels = c("Fulltime", "Parttime", "Unemployed", "Student", "Not in labor force"))
+data$employ <- as_factor(data$employ)
+levels(data$employ) <- c("Fulltime", "Parttime", "Unemployed", "Student", "Not in labor force")
 
 # Respondent's Mother's Work History
 data <- data %>%
@@ -181,7 +189,7 @@ data <- data %>%
 data$respmom <- as_factor(data$respmom)
 
 # Previous Homemaker Status
-data <- data %>%
+#data <- data %>%
   mutate(
     homemaker = case_when(
       ((rwork1  >= 2 & rwork1  <= 3) & SEX == "Female") | 
@@ -190,9 +198,20 @@ data <- data %>%
       ((spwork2 >= 2 & spwork2 <= 3) & SEX == "Male")   ~ "Homemaker",
       TRUE                                              ~ "Other"
     ))
+
+  ## Alternative homemaker coding (any employment vs other)
+  # data <- data %>%
+  #     mutate(
+  #        homemaker = case_when(
+  #          ((rwork1  >= 1 & rwork1  <= 2) & SEX == "Female") | 
+  #          ((spwork1 >= 1 & spwork1 <= 2) & SEX == "Male")   |
+  #          ((rwork2  >= 1 & rwork2  <= 2) & SEX == "Female") | 
+  #          ((spwork2 >= 1 & spwork2 <= 2) & SEX == "Male")   ~ "Wife Any Employment",
+  #          TRUE                                              ~ "Other"
+  #       ))
+  
 data$homemaker <- as_factor(data$homemaker)
 data <- within(data, homemaker <- relevel(homemaker, ref = "Other"))
-
 
 # Housework
 # check Chronbach's alpha
@@ -219,7 +238,10 @@ data <- data %>%
   mutate_at(.vars = vars(laundry:meals), 
             .funs = funs(unclass)) # Convert to underlying integer representation of factor
 
-data$hswrk<-rowSums(data[,19:24])-6  # Create Housework Index
+data <- data %>%
+  mutate(hswrk = rowSums(select(., laundry:meals))) # Create Housework Index
+
+data$hswrk<- data$hswrk - 6 # Make the scale start at 0.
 
 # Happiness with Family Life
 
@@ -292,7 +314,7 @@ data <- filter(data, age >= 18 & age <=54)
 data <- select(data, 
                pool, code, country, marst, relinc, sex, age, parent, 
                employ, homemaker, degree, hswrk, respmom, famlife, dualearn,
-               percohab)
+               percohab, duration)
 
 #Missing data
 colSums(is.na(data)) # For key variables
@@ -332,6 +354,23 @@ data <- data %>%
 remove(country)
 remove(index)
 # remove(GII)
+
+# Add Female Labor Force Participation
+## For Reviewer response
+## Data come from : https://data.worldbank.org/indicator/SL.TLF.TOTL.FE.ZS?end=2019&most_recent_year_desc=false&start=1990 (2012 FLFP)
+
+## create data-frame from scratch 
+country <- c("Argentina",	"Australia",	"Chile",	"Czech Republic",	"Finland",	"France",	"Germany",	"Iceland",	"India",	"Ireland",	"Latvia",	"Lithuania",	"Norway",	"Philippines",	"Poland",	"Spain",	"Sweden",	"Switzerland",	"United States",	"Venezuela")
+flfp <- c(41.35,	45.43,	40.70,	43.74,	48.07,	47.30,	45.90,	47.53,	21.27,	45.08,	49.95,	50.63,	47.27,	39.18,	45.07,	45.38,	47.44,	46.03,	45.98,	39.92)
+
+FLFP <- data.frame(country, flfp)
+
+data <- data %>% 
+  left_join(FLFP, by = "country") # merge new table with primary table
+remove(country)
+remove(flfp)
+
+# remove(FLFP)
 
 #Convert country back to factor variable
 data$country <- factor(data$country)
