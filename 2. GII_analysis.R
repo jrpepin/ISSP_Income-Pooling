@@ -1,18 +1,16 @@
-# Set-up
+#------------------------------------------------------------------------------------
+# GENDER INEQUALITY INDEX PROJECT
+# GII_03_analysis.R
+# Joanna Pepin and Philip Cohen
+#------------------------------------------------------------------------------------
 
-## Set working directory
-setwd(repoDir)
+# This file creates the figures and tables for the analysis.
+# It also creates Stata datafiles for additional analyses.
 
-## Figures & Tables
-library("foreign")
-# library("plyr")
-library("tableone")
-library("readxl")
-library("cowplot")
-library("ggplot2")
-library("ggrepel")
-#######################################################################################
+#####################################################################################
 # Figure 1
+#####################################################################################
+
 fig1_data <- table(data$country, data$pool)
 fig1_data <- prop.table(fig1_data, 1)
 fig1_data <- as_tibble(fig1_data, .name_repair = ~ c("country", "type", "prop"))
@@ -50,6 +48,8 @@ ggsave("figures/issp_figure 1.png", width = 16, height = 16, units = "cm", dpi =
 
 #######################################################################################
 # Table 1
+#######################################################################################
+
 data %>%
   group_by(code) %>%
   summarise(meanIndex = mean(index))
@@ -67,6 +67,7 @@ table(data$code)
 
 #######################################################################################
 # Table 2
+#######################################################################################
 
 # Create a variable list which we want in Table 2
 listVars <- c("sex", "age", "parent", "employ", "homemaker", "degree", "hswrk", "respmom", "famlife")
@@ -84,9 +85,11 @@ setwd(outDir)
 write.dta(data, "ISSPdata.dta") # Use this data in Stata to create Tables 3 & 4
 setwd(repoDir)
 #######################################################################################
-# Figures
 
-## Figure 2
+#######################################################################################
+# Figure 2
+#######################################################################################
+
 fig2_data <- read_excel("figures/fig2.xlsx")
 
 fig2_data <- fig2_data %>%
@@ -119,7 +122,10 @@ fig2
 
 ggsave("figures/issp_figure 2.png", fig2, width = 16, height = 8, units = "cm", dpi = 300)
 
-## Figure 3
+#######################################################################################
+# Figure 3
+#######################################################################################
+
 fig3_data <- read_excel("figures/fig3.xlsx")
 
 fig3_data <- fig3_data %>%
@@ -154,14 +160,14 @@ fig3
 
 ggsave("figures/issp_figure 3.png", fig3, width = 16, height = 8, units = "cm", dpi = 300)
 
-
 #######################################################################################
 # Analyses for reviewers
-
 #######################################################################################
-library("ggpubr")
 
-# Create Figure A dataset
+# Create Appendix Table A--------------------------------------------------------------
+table(data$country, data$pool)
+
+# Create Figure A----------------------------------------------------------------------
 figA_data <- data %>%
   distinct(code, index, percohab)
 
@@ -182,11 +188,7 @@ figA
 
 ggsave("figures/issp_figure A.png", width = 16, height = 16, units = "cm", dpi = 300)
 
-# Create Appendix Table A
-table(data$country, data$pool)
-
-#######################################################################################
-# Figure B
+# Figure B--------------------------------------------------------------------------
 figB_data <- table(data$country, data$pool)
 figB_data <- prop.table(figB_data, 1)
 figB_data <- as_tibble(figB_data, .name_repair = ~ c("country", "type", "prop"))
@@ -224,8 +226,7 @@ figB
 
 ggsave("figures/issp_figure B.png", width = 16, height = 16, units = "cm", dpi = 300)
 
-#######################################################################################
-## Figure C
+# Create Figure C--------------------------------------------------------------------
 figC_data <- read_excel("figures/figC.xlsx")
 
 figC_data <- figC_data %>%
@@ -257,8 +258,7 @@ figC
 
 ggsave("figures/issp_figure C.png", figC, width = 16, height = 8, units = "cm", dpi = 300)
 
-#######################################################################################
-## Figure D
+# Create Figure D-------------------------------------------------------------------------
 figD_data <- read_excel("figures/figD.xlsx")
 
 figD_data <- figD_data %>%
