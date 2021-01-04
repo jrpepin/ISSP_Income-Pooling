@@ -12,11 +12,6 @@ if(!require(renv)){           # https://rstudio.github.io/renv/articles/renv.htm
   library(renv)
 }
 
-if(!require(haven)){
-  install.packages("haven")
-  library(haven)
-}
-
 if(!require(tidyverse)){
   install.packages("tidyverse")
   library(tidyverse)
