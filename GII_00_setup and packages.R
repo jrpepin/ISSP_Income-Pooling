@@ -17,6 +17,11 @@ if(!require(tidyverse)){
   library(tidyverse)
 }
 
+if(!require(haven)){
+  install.packages("haven")
+  library(haven)
+}
+
 if(!require(forcats)){
   install.packages("forcats")
   library(forcats)
